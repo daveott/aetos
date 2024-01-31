@@ -29,15 +29,24 @@ RSpec.describe Order, type: :model do
     let!(:order_9) { Order.create(product: product_2) }
 
     it 'returns the most frequently ordered products, DESC count' do
-      expect(Order.frequently_ordered).to eq({ 'Product 2' => 4, 'Product 1' => 3, 'Product 3' => 2 })
+      expect(Order.frequently_ordered).to eq({
+        [product_2.id, 'Product 2'] => 4,
+        [product_1.id, 'Product 1'] => 3,
+        [product_3.id, 'Product 3'] => 2
+      })
     end
 
     context 'ordered in the last month' do
-      let!(:order_10) { Order.create(product: product_4, created_at: 2.months.ago) }
+      let!(:order_10) { Order.create(product: product_2, created_at: 1.week.ago) }
       let!(:order_11) { Order.create(product: product_4, created_at: 3.months.ago) }
+      let!(:order_12) { Order.create(product: product_4, created_at: 3.months.ago) }
 
       it 'returns the most frequently ordered products in the last month, DESC count' do
-        expect(Order.last_month.frequently_ordered).to eq({ 'Product 2' => 4, 'Product 1' => 3, 'Product 3' => 2 })
+        expect(Order.last_month.frequently_ordered).to eq({
+          [product_2.id, 'Product 2'] => 5,
+          [product_1.id, 'Product 1'] => 3,
+          [product_3.id, 'Product 3'] => 2
+        })
       end
     end
   end
